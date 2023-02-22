@@ -20,7 +20,7 @@ class LikesController < ApplicationController
     end
     private 
     def set_post
-        @post = Post.find(params[:id])
+        @post = Post.find(params[:post_id])
     end
 
 end
