@@ -1,7 +1,5 @@
 class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
-  rescue_from ActiveRecord::RecordNotFound, with: :render_response_not_found 
-  rescue_from ActiveRecord::RecordInvalid, with: :render_response_unprocessable_identity    
 
   # GET /posts or /posts.json
   def index
@@ -30,7 +28,7 @@ class PostsController < ApplicationController
         format.html { redirect_to post_url(@post), notice: "Post was successfully created." }
         format.json { render :show, status: :created, location: @post }
       else
-        format.html { redirect_to root_path, status: :unprocessable_entity, alert: @post.errors.full_messages }
+        format.html { redirect_to root_path, status: :unprocessable_entity, alert: @post.errors.full_messages}
         format.json { render json: @post.errors, status: :unprocessable_entity }
       end
     end
@@ -51,9 +49,8 @@ class PostsController < ApplicationController
 
   # DELETE /posts/1 or /posts/1.json
   def destroy
-    return if current_user != @post.user 
     @post.destroy
-    
+
     respond_to do |format|
       format.html { redirect_to posts_url, notice: "Post was successfully destroyed." }
       format.json { head :no_content }
@@ -65,16 +62,10 @@ class PostsController < ApplicationController
     def set_post
       @post = Post.find(params[:id])
     end
-    
-    def render_response_not_found 
-      render json: { error: 'Post not found'}, status: :not_found
-    end
-    
-    def render_response_unprocessable_identity(exception)
-      render json: { errors : exception.record.errors.full_messages }, status: :unprocessable_entity
-    end
+
     # Only allow a list of trusted parameters through.
     def post_params
       params.require(:post).permit(:caption, :longitude, :latitude, :user_id, :allow_comments, :show_likes_count, images: [])
     end
+
 end

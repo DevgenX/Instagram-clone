@@ -1,24 +1,24 @@
 class UsersController < ApplicationController
-    before_action :set_user
+  before_action :set_user, only: [:show]
   
-    def show
-      @user = User.all 
-      render json: @user, serializer: ShowPostFromUserSerializer
+  def index
+    if params[:search_query].present?
+      @users = User.where("username LIKE ?", "%#{params[:search_query]}%")
+    else
+      @users = []
     end
 
-    def create 
-      new_user = User.create(:name, :bio, :profile)
-
-      if new_user.valid? 
-        render json: new_user.posts 
-      else
-        render json: { error: new_user.errors.full_messages }, status: :unprocessable_entity
-      end
-
-    end
-  
-    private
-    def set_user
-      @user = User.find(params[:id])
+    if turbo_frame_request?
+      render partial: "layouts/search_results", locals: {users: @users}
     end
   end
+
+  def show
+    
+  end
+
+  private
+  def set_user
+    @user = User.find(params[:id])
+  end
+end
