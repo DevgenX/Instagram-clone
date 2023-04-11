@@ -8,10 +8,21 @@
     </button>
     <div class="d-flex">
       <div class="collapse navbar-collapse me-5" id="navbarSupportedContent">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2 border-0" type="search" placeholder="Search" aria-label="Search" style="background: #efefef">
-        </form>
+        <%= form_with(url: users_path, method: :get, data: {turbo_frame: "search_results", controller: "search-results"}, class:"d-flex") do |f| %>
+
+          <div class="dropdown">
+            <%= f.text_field :search_query, class: "form-control me-2 border-0", type:"search", placeholder:"Search",
+                "aria-label"=>"Search", style: "background: #efefef", "data-bs-toggle"=>"dropdown", "aria-expanded"=>"false",
+                data: {action: "input->search-results#search"} %>
+
+            <ul class="dropdown-menu p-4 mt-2" style="width:25rem">
+              <%= render 'layouts/search_results', users: [] %>
+            </ul>
+          </div>
+
+        <% end %>
       </div>
+
       <div class="navbar-collapse gap-4">
         <%=  link_to root_path, class: "text-dark" do %> <i class="fa-solid fa-house fa-xl"></i> <% end %>
         <i class="fa-brands fa-facebook-messenger fa-xl"></i>
@@ -20,7 +31,7 @@
         </a>
         <i class="fa-regular fa-compass fa-xl"></i>
 
-       <div class="dropstart">
+        <div class="dropstart">
           <i class="fa-regular fa-heart fa-xl" data-bs-toggle="dropdown" aria-expanded="false"></i>
           <ul class="dropdown-menu p-4">
             <% current_user.follow_requests.each do |fr| %>
@@ -41,12 +52,13 @@
                       <small class="fw-bold text-white">Decline</small>
                     <% end %>
                   </div>
+                  
                 </div>
               </li>
             <% end %>
           </ul>
         </div>
-          <div class="dropdown">
+        <div class="dropdown">
           <a class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <% if current_user && current_user.profile_pic.attached? %>
               <%= image_tag current_user.profile_pic, class: "img-thumbnail rounded-circle", style: "width: 2rem" %>
@@ -55,11 +67,11 @@
             <% end %>
           </a>
           <ul class="dropdown-menu">
-          <li>
-              <%= link_to 'Profile', user_path(current_user), class: "dropdown-item"%>
+            <li>
+              <%= link_to 'Profile', user_path(current_user), class: "dropdown-item" %>
             </li>
             <li>
-              <%= link_to 'Settings', edit_user_registration_path, class: "dropdown-item"%>
+              <%= link_to 'Settings', edit_user_registration_path, class: "dropdown-item" %>
             </li>
             <li>
               <%= button_to 'Log out', destroy_user_session_path, class: "dropdown-item", method: :delete%>
@@ -67,7 +79,7 @@
           </ul>
         </div>
 
-
+        
       </div>
     </div>
   </div>
